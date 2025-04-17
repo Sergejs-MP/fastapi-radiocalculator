@@ -1,11 +1,20 @@
 from fastapi import FastAPI
 from app.models import CalcRequest, CalcResponse
 from app import calculations
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Radiobiology LQ Calculator",
     description="Calculates radiobiological metrics (BED, EQD2, etc.) using the Linear-Quadratic model",
     version="1.0"
+)
+
+# 🔽 ADD THIS block just once, right after `app = FastAPI(...)`
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],        # during dev; later restrict to your UI domain
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.post("/calculate", response_model=CalcResponse)
