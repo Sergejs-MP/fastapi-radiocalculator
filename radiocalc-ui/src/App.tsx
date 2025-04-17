@@ -2,8 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import Plot from "react-plotly.js";
 
-const API = "http://127.0.0.1:8000/calculate"
-
+const API = "https://fastapi-radiocalculator.onrender.com/calculate";
 export default function App() {
   const [inp, setInp] = useState({ d: 2, n: 30, t: 40, ab: 10 });
   const [res, setRes] = useState<any | null>(null);
