@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import Plot from "react-plotly.js";
 
-const API = "https://YOUR-SUBDOMAIN.onrender.com/calculate";
+const API = "http://127.0.0.1:8000/calculate"
 
 export default function App() {
   const [inp, setInp] = useState({ d: 2, n: 30, t: 40, ab: 10 });
