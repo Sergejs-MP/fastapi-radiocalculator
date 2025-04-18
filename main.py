@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from app.models import CalcRequest, CalcResponse
 from app import calculations
 from fastapi.middleware.cors import CORSMiddleware
+from app.calculations import compensate_gap
+from app.models import GapRequest, GapResponse
 
 app = FastAPI(
     title="Radiobiology LQ Calculator",
@@ -33,3 +35,20 @@ def calculate(payload: CalcRequest):
     )
     # Return the results (will be automatically converted to CalcResponse)
     return result
+
+# -------------------------------------------------------------------------
+# Gap‑compensation endpoint
+# -------------------------------------------------------------------------
+
+@app.post("/gap_compensation", response_model=GapResponse)
+def gap_compensation(req: GapRequest):
+    """
+    Calculate BED/EQD2 lost due to an unscheduled treatment gap and the
+    extra dose or fractions needed to compensate.
+    """
+    return compensate_gap(
+        dose_per_fraction=req.dose_per_fraction,
+        alpha_beta=req.alpha_beta,
+        missed_days=req.missed_days,
+        dose_loss_per_day=req.dose_loss_per_day,
+    )

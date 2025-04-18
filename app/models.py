@@ -15,3 +15,18 @@ class CalcResponse(BaseModel):
     eqd2: float                        # Equivalent dose in 2 Gy fractions (Gy)
     time_corrected_bed: float          # BED corrected for treatment time (Gy)
     survival_fraction: float           # Surviving fraction of cells (0 to 1)
+    
+
+class GapRequest(BaseModel):
+    dose_per_fraction: float          # d  (Gy)
+    num_fractions: int                # n
+    alpha_beta: float                 # α/β (Gy)
+    missed_days: int                  # unscheduled gap ΔT (days)
+    kickoff_days: int = 28            # T_k (default 28 d)
+    dose_loss_per_day: float = 0.9    # K  (Gy BED/day)
+
+class GapResponse(BaseModel):
+    bed_lost: float                   # Gy BED
+    eqd2_lost: float                  # Gy EQD2
+    extra_physical_dose: float        # Gy at same d
+    extra_fractions: int              # whole extra fracs

@@ -54,3 +54,33 @@ def compute_metrics(
         "time_corrected_bed": time_corrected_bed,
         "survival_fraction": survival_fraction
     }
+    
+    
+def compensate_gap(
+    dose_per_fraction: float,
+    alpha_beta: float,
+    missed_days: int,
+    dose_loss_per_day: float = 0.9,
+) -> dict:
+    """
+    Calculates BED/EQD2 lost due to an unscheduled gap and how much extra
+    dose or fractions are needed to compensate.
+    """
+    # 1. BED loss (Gy) from the gap
+    bed_lost = dose_loss_per_day * max(0, missed_days)
+
+    # 2. Convert to EQD2
+    eqd2_lost = bed_lost / (1 + 2 / alpha_beta)
+
+    # 3. Extra physical Gy needed to restore BED
+    extra_gy = bed_lost / (1 + dose_per_fraction / alpha_beta)
+
+    # 4. Extra whole fractions
+    extra_fracs = math.ceil(extra_gy / dose_per_fraction) if dose_per_fraction > 0 else 0
+
+    return {
+        "bed_lost": round(bed_lost, 2),
+        "eqd2_lost": round(eqd2_lost, 2),
+        "extra_physical_dose": round(extra_gy, 1),
+        "extra_fractions": extra_fracs,
+    }
