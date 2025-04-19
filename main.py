@@ -4,6 +4,8 @@ from app import calculations
 from fastapi.middleware.cors import CORSMiddleware
 from app.calculations import compensate_gap
 from app.models import GapRequest, GapResponse
+from fastapi import Query
+from app.models import DualCalcResponse
 
 app = FastAPI(
     title="Radiobiology LQ Calculator",
@@ -52,3 +54,25 @@ def gap_compensation(req: GapRequest):
         missed_days=req.missed_days,
         dose_loss_per_day=req.dose_loss_per_day,
     )
+    
+@app.post("/calculate_dual", response_model=DualCalcResponse)
+def calculate_dual(
+    payload: CalcRequest,
+    oar_alpha_beta: float = Query(..., alias="oar_ab"),
+):
+    """Return metrics for tumour AND OAR using their respective α/β."""
+    tumour_res = calculations.compute_metrics(
+        dose_per_fraction=payload.dose_per_fraction,
+        number_of_fractions=payload.number_of_fractions,
+        alpha_beta=payload.alpha_beta,         # tumour α/β
+        treatment_time=payload.treatment_time,
+        kickoff_time=payload.kickoff_time,
+        dose_loss_per_day=payload.dose_loss_per_day,
+    )
+    oar_res = calculations.compute_metrics(
+        dose_per_fraction=payload.dose_per_fraction,
+        number_of_fractions=payload.number_of_fractions,
+        alpha_beta=oar_alpha_beta,             # OAR α/β
+        treatment_time=payload.treatment_time,
+    )
+    return {"tumour": tumour_res, "oar": oar_res}

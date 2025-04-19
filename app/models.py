@@ -30,3 +30,7 @@ class GapResponse(BaseModel):
     eqd2_lost: float                  # Gy EQD2
     extra_physical_dose: float        # Gy at same d
     extra_fractions: int              # whole extra fracs
+    
+class DualCalcResponse(BaseModel):
+    tumour: CalcResponse
+    oar:    CalcResponse
