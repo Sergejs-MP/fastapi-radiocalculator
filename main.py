@@ -87,13 +87,16 @@ def calculate_multi(req: MultiCalcRequest):
         req.tumour_ab,
         req.treatment_time,
     )
-    oar_res_list = [
-        compute_metrics(
+oar_res_list = [
+    {
+        "label": oar.label,
+        **compute_metrics(
             req.dose_per_fraction,
             req.number_of_fractions,
             oar.alpha_beta,
             req.treatment_time,
-        ) | {"label": oar.label}   # attach label for UI legend
-        for oar in req.oars
-    ]
-    return {"tumour": tumour_res, "oars": oar_res_list}
+        ),
+    }
+    for oar in req.oars
+]
+return {"tumour": tumour_res, "oars": oar_res_list}
