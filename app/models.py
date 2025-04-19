@@ -34,3 +34,18 @@ class GapResponse(BaseModel):
 class DualCalcResponse(BaseModel):
     tumour: CalcResponse
     oar:    CalcResponse
+    
+class OARRequest(BaseModel):
+    label: str
+    alpha_beta: float
+
+class MultiCalcRequest(BaseModel):
+    dose_per_fraction: float
+    number_of_fractions: int
+    treatment_time: float
+    tumour_ab: float
+    oars: list[OARRequest]
+
+class MultiCalcResponse(BaseModel):
+    tumour: CalcResponse
+    oars:   list[CalcResponse]

@@ -6,6 +6,8 @@ from app.calculations import compensate_gap
 from app.models import GapRequest, GapResponse
 from fastapi import Query
 from app.models import DualCalcResponse
+from app.models import MultiCalcRequest, MultiCalcResponse, OARRequest
+from app.calculations import compute_metrics
 
 app = FastAPI(
     title="Radiobiology LQ Calculator",
@@ -76,3 +78,22 @@ def calculate_dual(
         treatment_time=payload.treatment_time,
     )
     return {"tumour": tumour_res, "oar": oar_res}
+
+@app.post("/calculate_multi", response_model=MultiCalcResponse)
+def calculate_multi(req: MultiCalcRequest):
+    tumour_res = compute_metrics(
+        req.dose_per_fraction,
+        req.number_of_fractions,
+        req.tumour_ab,
+        req.treatment_time,
+    )
+    oar_res_list = [
+        compute_metrics(
+            req.dose_per_fraction,
+            req.number_of_fractions,
+            oar.alpha_beta,
+            req.treatment_time,
+        ) | {"label": oar.label}   # attach label for UI legend
+        for oar in req.oars
+    ]
+    return {"tumour": tumour_res, "oars": oar_res_list}
