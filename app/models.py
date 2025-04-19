@@ -16,6 +16,9 @@ class CalcResponse(BaseModel):
     time_corrected_bed: float          # BED corrected for treatment time (Gy)
     survival_fraction: float           # Surviving fraction of cells (0 to 1)
     
+    
+class OarCalcResponse(CalcResponse):
+    label: str        # this key will now be preserved
 
 class GapRequest(BaseModel):
     dose_per_fraction: float          # d  (Gy)
@@ -48,4 +51,4 @@ class MultiCalcRequest(BaseModel):
 
 class MultiCalcResponse(BaseModel):
     tumour: CalcResponse
-    oars:   list[CalcResponse]
+    oars:   list[OarCalcResponse]
