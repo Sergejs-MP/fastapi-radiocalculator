@@ -8,6 +8,8 @@ from fastapi import Query
 from app.models import DualCalcResponse
 from app.models import MultiCalcRequest, MultiCalcResponse, OARRequest
 from app.calculations import compute_metrics
+from app.routes import router  # add this after other imports
+
 
 app = FastAPI(
     title="Radiobiology LQ Calculator",
@@ -22,6 +24,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(router)
 
 @app.post("/calculate", response_model=CalcResponse)
 def calculate(payload: CalcRequest):
